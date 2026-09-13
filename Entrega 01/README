@@ -46,12 +46,12 @@ El proceso se alimentará en forma semanal con la extracción de data provenient
 
 ### 2. Carta Gantt
 
-| N° | Actividad | Semana 1 | Semana 2 | Semana 3 |
+| N°| Actividad                                | Semana 1       | Semana 2    |Semana 3         |
 |---|---|---|---|---|
-| 1 | Descripción de la Solución y Alcance | **COMPLETADO** | | |
-| 2 | Definición del Esquema de Datos | **COMPLETADO** | | |
-| 3 | Generación de CSVs Simulados (Archivos) | | *TAREA MVP* | |
-| 4 | Script R: Ingesta, Join (RUT) y Semáforo | | *TAREA MVP* | |
-| 5 | Gráficos de Resultados (`ggplot2`) | | | *DOCUMENTACIÓN* |
-| 6 | Diagrama de Flujo & Entorno (`renv`) | | | *DOCUMENTACIÓN* |
-| 7 | Subida Final a Repositorio GitHub | | | *ENTREGA FINAL* |
+| 1 | Descripción de la Solución y Alcance     | **COMPLETADO** |             |                 |
+| 2 | Definición del Esquema de Datos          | **COMPLETADO** |             |                 |
+| 3 | Generación de CSVs Simulados (Archivos)  |                | *TAREA MVP* |                 |
+| 4 | Script R: Ingesta, Join (RUT) y Semáforo |                | *TAREA MVP* |                 |
+| 5 | Gráficos de Resultados (`ggplot2`)       |                |             | *DOCUMENTACIÓN* |
+| 6 | Diagrama de Flujo & Entorno (`renv`)     |                |             | *DOCUMENTACIÓN* |
+| 7 | Subida Final a Repositorio GitHub        |                |             | *ENTREGA FINAL* |
