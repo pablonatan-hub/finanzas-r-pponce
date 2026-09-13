@@ -1,0 +1,57 @@
+# Primera Parte: Finanzas en R
+
+**Estudiante:** Pablo Ponce B.
+
+---
+
+## Entregable 1: Descripción de la Solución (Business Case)
+
+### Título del Proyecto
+Sistema de Alerta y Monitoreo Semanal para la Prevención de Pérdida en Coberturas por VP (Valor Póliza).
+
+### Problema que soluciona
+Identifica automáticamente a clientes cuyos productos de seguro están próximos a alcanzar un Valor Póliza crítico (VP < 0), 
+evitando que el cliente quede desprotegido ante un siniestro por falta de saldo para cubrir los costos de administración y primas adeudadas.
+
+### Impacto y Audiencia
+- **Clientes:** Reciben alertas preventivas sobre fallas en sus descuentos automáticos o insuficiencia de fondo, evitando sorpresas ante eventos inesperados.
+- **Área Comercial / Postventa:** Permite realizar gestiones proactivas de cobro, solicitudes de aportes o regularizaciones para proteger 
+la retención de clientes y resguardar el flujo de comisiones.
+- **Gerencia / Jefaturas:** Proporciona tableros de gestión con la salud financiera de la cartera y la efectividad de la cobranza/retención.
+
+### Cómo se soluciona la situación
+Se busca desarrollar un motor en R con ingesta semanal de 2 o 3 archivos `.csv` o `.xlsx` (provenientes de simulaciones de extracción a bases de datos operacionales/contables). Dicho motor realiza el merge o consolidación usando la identidad del cliente (RUT y fecha de corte); con esto calcula la proyección del VP descontando costos administrativos y primas pendientes, y finalmente clasifica al cliente en un semáforo de riesgo ($VP = 0$, $VP < 30\text{ días de costo}$, $VP\text{ Saludable}$).
+
+### Periodicidad
+El proceso se alimentará en forma semanal con la extracción de data proveniente de querys simuladas.
+
+### Alcance
+- **Qué considera:** Ingesta multi-archivo, consolidación y limpieza con `tidyverse`, generación de indicadores de riesgo por cliente, guardado del historial de estados por fecha de consulta y reporte visual/tabla de salida (`ggplot2` / `knitr`).
+- **Qué NO considera (out of scope):** Conexión en vivo por API a los core aseguradores (se simulará ingesta vía archivos), ejecuciones de modelos predictivos avanzados de Machine Learning ni envío automatizado de correos desde R en esta primera fase.
+
+---
+
+## Entregable 2: Planificación del Trabajo y Carta Gantt
+
+### 1. Descriptor de Fases
+
+- **Fase 1: Definición y Arquitectura de Datos (Semana 1)**
+  Especificación de requerimientos de negocio, diseño de los esquemas de datos simulados (RUT, prima adeudada, VP, costo póliza) y estructura del repositorio Git.
+
+- **Fase 2: Desarrollo del MVP en R (Semana 2)**
+  Creación de data sintética, desarrollo del script en R (`tidyverse`) para la ingesta multi-archivo, lógica de unión de tablas (*joins*), cálculo del VP crítico y exportación del dataset procesado.
+
+- **Fase 3: Documentación, Visualización y Despliegue (Semana 3)**
+  Generación de gráficos analíticos (`ggplot2`), diagramación del flujo de datos (vía Bizagi/Visio o Vetiver), configuración del entorno con `renv` y consolidación final en el repositorio de GitHub.
+
+### 2. Carta Gantt
+
+| N° | Actividad | Semana 1 | Semana 2 | Semana 3 |
+|---|---|---|---|---|
+| 1 | Descripción de la Solución y Alcance | **COMPLETADO** | | |
+| 2 | Definición del Esquema de Datos | **COMPLETADO** | | |
+| 3 | Generación de CSVs Simulados (Archivos) | | *TAREA MVP* | |
+| 4 | Script R: Ingesta, Join (RUT) y Semáforo | | *TAREA MVP* | |
+| 5 | Gráficos de Resultados (`ggplot2`) | | | *DOCUMENTACIÓN* |
+| 6 | Diagrama de Flujo & Entorno (`renv`) | | | *DOCUMENTACIÓN* |
+| 7 | Subida Final a Repositorio GitHub | | | *ENTREGA FINAL* |
