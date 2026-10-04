@@ -1,0 +1,131 @@
+---
+title: "Sistema de Alerta y Monitoreo Semanal para la Prevención de Pérdida en Coberturas por VP"
+subtitle: "Proyecto Final - Curso Finanzas en R"
+author: "Pablo Ponce B."
+date: "`r Sys.Date()`"
+format:
+  html:
+    theme: cosmo
+    toc: true
+    toc-depth: 3
+    code-fold: show
+    number-sections: true
+execute:
+  warning: false
+  message: false
+---
+
+```{r setup, include=FALSE}
+library(tidyverse)
+library(openxlsx)
+library(scales)
+library(knitr)
+
+# Cargar el dataset RDS más reciente
+f_rds <- list.files(path = ".", pattern = "cartera_procesada_.*\\.rds$", full.names = TRUE)
+if (length(f_rds) > 0) {
+  df_cartera <- readRDS(max(f_rds))
+} else {
+  stop("No se encontraron archivos de cartera procesada.")
+}
+```
+
+# Descripción de la Solución y Alcance
+
+## Problema de Negocio
+En la industria aseguradora, los productos de seguro con ahorro (Valor Póliza - VP) corren el riesgo de caducar cuando el saldo de ahorro no logra cubrir los costos de administración y las primas adeudadas ($VP \le 0$)[cite: 5]. Esto deja al cliente desprotegido ante siniestros y genera pérdidas financieras para la compañía[cite: 5].
+
+## Alcance del Sistema
+El sistema automatiza la ingesta semanal de datos operativos (información del cliente, deudas y vías de pago), consolidando la información mediante el `RUT`[cite: 4, 5, 6]. Aplica reglas de negocio deterministas para proyectar los meses faltantes antes del default y clasifica a la cartera en un semáforo de riesgo (Saludable, Advertencia, Crítico)[cite: 4, 5, 6].
+
+---
+
+# Arquitectura del Data Pipeline y Diagrama de Flujo
+
+El flujo de procesamiento semanal de datos está estructurado según la siguiente secuencia[cite: 3, 4]:
+
+```{mermaid}
+graph TD
+    subgraph 1. Ingesta Multi-Archivo
+        A1[clientes_info.csv<br/>RUT, Sueldo, Prima]
+        A2[polizas_deuda.csv<br/>RUT, Primas, Gastos]
+        A3[vias_pago.csv<br/>RUT, Vía Pago, Costo]
+    end
+
+    subgraph 2. Control de Historial
+        B{¿Ya procesados?<br/>historial_archivos_procesados.txt}
+        A1 --> B
+        A2 --> B
+        A3 --> B
+        B -- No --> C[Lectura y Carga CSV]
+    end
+
+    subgraph 3. Motor R (Join & Reglas)
+        C --> D[Inner Join por RUT]
+        D --> E[Calculo Deuda Total]
+        E --> F[Semaforo de Riesgo VP]
+    end
+
+    subgraph 4. Salida & Persistencia
+        F --> G1[Reporte Excel Multi-Hoja .xlsx]
+        F --> G2[Persistencia Historica .csv / .rds]
+        F --> G3[Graficos Analiticos /graficos]
+    end
+```
+
+---
+
+# Resultados y Métricas de Cartera
+
+A continuación se presenta la tabla resumen ejecutiva con el estado de la cartera para la fecha de corte actual[cite: 4, 5]:
+
+```{r resumen_ejecutivo, echo=FALSE}
+resumen <- df_cartera %>%
+  group_by(semaforo_riesgo) %>%
+  summarise(
+    Clientes = n(),
+    `Porcentaje (%)` = round((n() / nrow(df_cartera)) * 100, 1),
+    `Prima Total ($)` = sum(prima_pactada, na.rm = TRUE),
+    `Deuda Total ($)` = sum(deuda_total_acumulada, na.rm = TRUE),
+    .groups = "drop"
+  )
+
+kable(resumen, format.args = list(big.mark = "."))
+```
+
+---
+
+# Visualización Analítica (`ggplot2`)
+
+## Distribución de Clientes por Semáforo
+```{r grafico_clientes, echo=FALSE, fig.width=8, fig.height=4.5}
+g1_path <- list.files("graficos", pattern = "grafico_1_distribucion_.*\\.png$", full.names = TRUE)
+if (length(g1_path) > 0) {
+  include_graphics(max(g1_path))
+} else {
+  cat("Grafico de clientes pendiente de generacion.")
+}
+```
+
+## Impacto Financiero y Monto en Riesgo
+```{r grafico_financiero, echo=FALSE, fig.width=8, fig.height=4.5}
+g2_path <- list.files("graficos", pattern = "grafico_2_impacto_financiero_.*\\.png$", full.names = TRUE)
+if (length(g2_path) > 0) {
+  include_graphics(max(g2_path))
+} else {
+  cat("Grafico financiero pendiente de generacion.")
+}
+```
+
+---
+
+# Model Card (Marco Vetiver)
+
+* **Nombre del Proceso:** Motor de Monitoreo Semanal de Pérdida de VP[cite: 4, 5].
+* **Versión:** 1.0.0 (MVP Batch)[cite: 4, 5].
+* **Entorno y Dependencias:** Gestionado dinámicamente con `renv` (`renv.lock`)[cite: 1, 5].
+* **Entradas:** Tres archivos CSV unificados por la clave primaria `RUT`[cite: 4, 5, 6].
+* **Lógica Principal:**
+  * Deuda Total = Costo Adeudado + Gastos Adeudados[cite: 4, 6].
+  * Proyección a Default = $\max(0, 3 - \text{primas\_pendientes})$[cite: 4, 6].
+* **Mantenimiento (MLOps):** Idempotencia mediante control de registros en `historial_archivos_procesados.txt`[cite: 3, 4].
