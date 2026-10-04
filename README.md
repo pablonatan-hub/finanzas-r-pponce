@@ -15,3 +15,7 @@ El documento completo y detallado de la primera entrega se encuentra disponible 
 ### Resumen de la Solución
 - **Proyecto:** Sistema de Alerta y Monitoreo Semanal para la Prevención de Pérdida en Coberturas por VP.
 - **Objetivo:** Identificar clientes cuyos productos de seguro están próximos a alcanzar un Valor Póliza crítico (VP < 0), evitando la pérdida de cobertura.
+
+## Entrega 02 y 03
+* **Descripción:** Solución auto-contenida con entorno de reproducibilidad (`renv.lock`), scripts de procesamiento, datos sintéticos e informe dinámico.
+* **Carpeta:** `/entrega 02 y 03`
